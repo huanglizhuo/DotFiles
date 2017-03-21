@@ -33,6 +33,8 @@ set cursorcolumn
 " 高亮显示搜索结果
 set hlsearch
 
+set completeopt-=preview
+
 let mapleader=","
 nmap <leader>q :q<CR>
 nmap <leader>w :w<CR>
