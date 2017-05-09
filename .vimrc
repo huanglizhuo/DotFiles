@@ -10,14 +10,19 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
 Plugin 'fatih/vim-go'
 Plugin 'scrooloose/nerdtree'
+Plugin 'davidhalter/jedi-vim'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'Lokaltog/vim-powerline'
+Plugin 'Shougo/neocomplete.vim'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-syntax enable
+syntax enable 
 set background=dark
 colorscheme solarized
+set ts=4
+set expandtab
+set autoindent
 
 set foldmethod=syntax
 " close fold when vim start
@@ -33,25 +38,25 @@ set cursorcolumn
 " 高亮显示搜索结果
 set hlsearch
 
-set completeopt-=preview
-
 let mapleader=","
 nmap <leader>q :q<CR>
 nmap <leader>w :w<CR>
 nmap <leader>wq :wq<CR>
 " back to last time edit place
-au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif   
+au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif
 
 map <C-n> :NERDTreeToggle<CR>
 
 " solve the insert mode backspace/delete not work
 set backspace=2
 " set relativenumber
-set rnu 
+set rnu
+set completeopt-=preview
 " share clipboard with system
 set clipboard=unnamed
 " neocomplete configure
 " Use neocomplete.
+
 let g:neocomplete#enable_at_startup = 1
 " Use smartcase.
 let g:neocomplete#enable_smart_case = 1
@@ -114,3 +119,6 @@ au FileType go nmap <leader>c <Plug>(go-coverage)
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
+
+
+let g:jedi#show_call_signatures = "0"
