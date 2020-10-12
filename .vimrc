@@ -1,124 +1,272 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+" On-demand loading
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'fatih/vim-go', { 'tag': '*' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'ryanoasis/vim-devicons'
+Plug 'airblade/vim-gitgutter'
+Plug 'scrooloose/nerdcommenter'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'dense-analysis/ale'
+Plug 'tpope/vim-surround'
+Plug 'altercation/vim-colors-solarized'
+Plug 'vhdirk/vim-cmake'
+Plug 'majutsushi/tagbar'
+Plug 'rust-lang/rust.vim'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'rhysd/vim-clang-format'
+Plug 'jlanzarotta/bufexplorer'
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Initialize plugin system
+call plug#end()
 
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-repeat'
-Plugin 'fatih/vim-go'
-Plugin 'scrooloose/nerdtree'
-Plugin 'davidhalter/jedi-vim'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'Lokaltog/vim-powerline'
-Plugin 'Shougo/neocomplete.vim'
-call vundle#end()            " required
-filetype plugin indent on    " required
-
-syntax enable 
+syntax enable
 set background=dark
 colorscheme solarized
-set ts=4
-set expandtab
-set autoindent
 
-set foldmethod=syntax
-" close fold when vim start
-set nofoldenable
 
-" always Show statusbar
-set laststatus=2
+" open split window at bottom
+set splitbelow
+set wildmenu
+set mouse=a
+set clipboard=unnamed
 " show cursor place
-set ruler
+" set ruler
 " hight the current cursor
-set cursorline
-set cursorcolumn
+"set cursorline
+"set cursorcolumn
 " 高亮显示搜索结果
 set hlsearch
+set incsearch
+hi Search guibg=peru guifg=wheat
+"hi Search ctermbg=Black
+"hi Search ctermfg=green
+
+"let g:fzf_action = { 'ctrl-e': 'edit' }
+nmap <F8> :TagbarToggle<CR>
+nmap <C-p> :Files<CR>
+nmap <C-e> :Buffers<CR>
+
+" for compile and run cpp 
+nnoremap <C-x> :!g++ -o  %:r.out % -std=c++11 && ./%:r.out
+
+let g:clang_format#auto_format = 1
+
+nnoremap <C-l> gt
+nnoremap <C-h> gT
+" rust configure --
+let g:rustfmt_autosave = 1
+autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
+
+set statusline+=%{gutentags#statusline()}
+let g:gutentags_cache_dir = "/Users/lizhuo.huang/.vim/ctagcache/"
+
+let g:NERDTreeHijackNetrw = 1
+let NERDTreeShowHidden=1
+" open file in new tab default
+" let NERDTreeMapOpenInTab='<ENTER>'
+
+au VimEnter NERD_tree_1 enew | execute 'NERDTree '.argv()[0]
+nmap <C-n> :NERDTreeToggle<CR>
+nmap <C-f> :NERDTreeFind<CR>
+
+" enable line numbers
+let NERDTreeShowLineNumbers=1
+
+"nnoremap <C-\> :call MyNerdToggle()<CR>
+
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+let g:NERDTreeGitStatusWithFlags = 1
+let g:NERDTreeIgnore = ['^node_modules$']
+" Highlight currently open buffer in NERDTree
+"autocmd BufEnter * call SyncTree()
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+let g:NERDDefaultAlign = 'left'  "将行注释符左对齐
+vmap ++ <plug>NERDCommenterToggle
+nmap ++ <plug>NERDCommenterToggle
 
 let mapleader=","
 nmap <leader>q :q<CR>
 nmap <leader>w :w<CR>
 nmap <leader>wq :wq<CR>
+nmap <leader>1 1gt<CR>
+nmap <leader>2 2gt<CR>
+nmap <leader>3 3gt<CR>
+nmap <leader>4 4gt<CR>
+
+nnoremap <Leader>s :%s/\<<C-r><C-w>\>/
 " back to last time edit place
 au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif
 
-map <C-n> :NERDTreeToggle<CR>
+" insert mode ctrl+r search and replace current selected word
+vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
 
-" solve the insert mode backspace/delete not work
-set backspace=2
-" set relativenumber
-set rnu
-set completeopt-=preview
-" share clipboard with system
-set clipboard=unnamed
-" neocomplete configure
-" Use neocomplete.
+" j/k will move virtual lines (lines that wrap)
+noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
+noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
 
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
+set relativenumber
+set smarttab
+set cindent
+set tabstop=4
+set shiftwidth=4
+" always uses spaces instead of tab characters
+set expandtab
+set backspace=indent,eol,start
 
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-let g:neocomplete#enable_auto_select = 1
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
+" if hidden is not set, TextEdit might fail.
+set hidden
 
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.go = '[^.[:digit:] *\t]\.'
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
 
-"vim-go
-let g:go_fmt_fail_silently = 1
-let g:go_fmt_command = "gofmt" "Explicited the formater plugin (gofmt, goimports, goreturn...)
+" Better display for messages
+set cmdheight=2
 
-" Show a list of interfaces which is implemented by the type under your cursor
-au FileType go nmap <Leader>s <Plug>(go-implements)
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
 
-" Show type info for the word under your cursor
-au FileType go nmap <Leader>i <Plug>(go-info)
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
 
-" Open the relevant Godoc for the word under the cursor
-au FileType go nmap <Leader>gd <Plug>(go-doc)
-au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+" always show signcolumns
+set signcolumn=yes
 
-" Open the Godoc in browser
-au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Run/build/test/coverage
-au FileType go nmap <leader>r <Plug>(go-run)
-au FileType go nmap <leader>b <Plug>(go-build)
-au FileType go nmap <leader>t <Plug>(go-test)
-au FileType go nmap <leader>c <Plug>(go-coverage)
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" By default syntax-highlighting for Functions, Methods and Structs is disabled.
-" Let's enable them!
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 1
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
 
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 
-let g:jedi#show_call_signatures = "0"
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+"Close the quickfix and location list after the file is closed
+autocmd BufEnter * if (winnr('$') == 1 && &buftype ==# 'quickfix' ) |
+                \   bd|
+                \   q | endif
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Create mappings for function text object, requires document symbols feature of languageserver.
+xmap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-i)
+omap af <Plug>(coc-funcobj-a)
+
+" Use <TAB> for select selections ranges, needs server support, like: coc-tsserver, coc-python
+nmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <TAB> <Plug>(coc-range-select)
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Add status line support, for integration with other plugin, checkout `:h coc-status`
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
